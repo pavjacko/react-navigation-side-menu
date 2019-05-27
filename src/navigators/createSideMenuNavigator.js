@@ -1,30 +1,30 @@
 /* @flow */
 
-import * as React from 'react';
-import { View, StyleSheet } from 'react-native';
+import * as React from "react";
+import { View, StyleSheet } from "react-native";
 
 // eslint-disable-next-line import/no-unresolved
-import { ScreenContainer } from 'react-native-screens';
+import { ScreenContainer } from "react-native-screens";
 
 import createTabNavigator, {
-  type InjectedProps,
-} from '../utils/createTabNavigator';
-import BottomTabBar, { type TabBarOptions } from '../views/SideMenu';
-import ResourceSavingScene from '../views/ResourceSavingScene';
+  type InjectedProps
+} from "../utils/createTabNavigator";
+import BottomTabBar, { type TabBarOptions } from "../views/SideMenu";
+import ResourceSavingScene from "../views/ResourceSavingScene";
 
 type Props = InjectedProps & {
   lazy?: boolean,
   tabBarComponent?: React.ComponentType<*>,
-  tabBarOptions?: TabBarOptions,
+  tabBarOptions?: TabBarOptions
 };
 
 type State = {
-  loaded: number[],
+  loaded: number[]
 };
 
 class TabNavigationView extends React.PureComponent<Props, State> {
   static defaultProps = {
-    lazy: true,
+    lazy: true
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -34,12 +34,12 @@ class TabNavigationView extends React.PureComponent<Props, State> {
       // Set the current tab to be loaded if it was not loaded before
       loaded: prevState.loaded.includes(index)
         ? prevState.loaded
-        : [...prevState.loaded, index],
+        : [...prevState.loaded, index]
     };
   }
 
   state = {
-    loaded: [this.props.navigation.state.index],
+    loaded: [this.props.navigation.state.index]
   };
 
   _getButtonComponent = ({ route }) => {
@@ -65,7 +65,7 @@ class TabNavigationView extends React.PureComponent<Props, State> {
       getTestID,
       renderIcon,
       onTabPress,
-      onTabLongPress,
+      onTabLongPress
     } = this.props;
 
     const { descriptors } = this.props;
@@ -104,13 +104,19 @@ class TabNavigationView extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { navigation, renderScene, lazy } = this.props;
+    const { navigation, renderScene, lazy, tabBarOptions } = this.props;
     const { routes } = navigation.state;
     const { loaded } = this.state;
 
     return (
-      <View style={styles.container}>
-      {this._renderTabBar()}
+      <View
+        style={
+          tabBarOptions.position === "top"
+            ? styles.topContainer
+            : styles.sideContainer
+        }
+      >
+        {this._renderTabBar()}
         <ScreenContainer style={styles.pages}>
           {routes.map((route, index) => {
             if (lazy && !loaded.includes(index)) {
@@ -131,21 +137,25 @@ class TabNavigationView extends React.PureComponent<Props, State> {
             );
           })}
         </ScreenContainer>
-
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
+  sideContainer: {
     flex: 1,
-    overflow: 'hidden',
-    flexDirection: 'row'
+    overflow: "hidden",
+    flexDirection: "row"
+  },
+  topContainer: {
+    flex: 1,
+    overflow: "hidden",
+    flexDirection: "column"
   },
   pages: {
-    flex: 1,
-  },
+    flex: 1
+  }
 });
 
 export default createTabNavigator(TabNavigationView);
